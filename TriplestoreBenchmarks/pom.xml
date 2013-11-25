@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>sk.eea.triplestore.eval</groupId>
+	<artifactId>TriplestoreBenchmarks</artifactId>
+	<name>TriplestoreBenchmarks</name>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<version>${sesame.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-http</artifactId>
+			<version>${sesame.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-runtime</artifactId>
+			<version>${sesame.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>virtuoso.sesame2</groupId>
+			<artifactId>driver</artifactId>
+			<version>${virtuoso.provider.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>virtuoso</groupId>
+			<artifactId>jdbc4</artifactId>
+			<version>${virtuoso.provider.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.bigdata</groupId>
+			<artifactId>bigdata</artifactId>
+			<version>${bigdata.version}</version>
+		</dependency>
+		
+		
+            
+	</dependencies>
+
+	<repositories>
+		<repository>
+   			<id>bigdata.releases</id>
+   			<url>http://www.systap.com/maven/releases</url>
+ 		</repository>
+	</repositories>
+
+
+	<properties>
+		<sesame.version>2.6.10</sesame.version>
+		<slf4j.version>1.6.1</slf4j.version>
+		<bigdata.version>1.2.4</bigdata.version>
+		<virtuoso.provider.version>2.0</virtuoso.provider.version>
+	</properties>
+
+	<version>1.0.0</version>
+</project>
