@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import sk.eea.triplestore.bench.stores.BigdataStore;
 import sk.eea.triplestore.bench.stores.OpenRdfStore;
+import sk.eea.triplestore.bench.stores.OwlimStore;
 import sk.eea.triplestore.bench.stores.Store;
 import sk.eea.triplestore.bench.stores.VirtuosoStore;
 
@@ -33,6 +34,8 @@ public class TriplestoresBenchmark {
 			return new VirtuosoStore();
 		} else if ("bigdata".equals(settings.repository_type)) {
 			return new BigdataStore();
+		} else if ("owlim".equals(settings.repository_type)) {
+			return new OwlimStore();
 		}
 		throw new IllegalArgumentException("invalid provider:" + settings.repository_type);
 	}
@@ -64,24 +67,26 @@ public class TriplestoresBenchmark {
 			for (int testRun = 0; testRun < settings.runs; testRun++) {
 
 				//load test
-				long time = p.testLoadData(settings.getFileName(1), settings.getFileUri(1));
-				addResult(results, "Load", time);
+				long[] ret = p.testLoadData(settings.getFileName(1), settings.getFileUri(1));
+				addResult(results, "Load (count:" + ret[1] + ")", ret[0]);
 				
 				//batch load
-				int[] commitSizes = { 1000, 10000, 25000, 50000, 100000, 200000 };
+				int[] commitSizes = { 1000, 10000, 100000};
 				for (int commitSize : commitSizes) {
-					time = p.testLoadDataBatch(settings.getFileName(1), settings.getFileUri(1), commitSize);
-					addResult(results,  "LoadInBatch (size=" + commitSize + ")", time);
+					ret = p.testLoadDataBatch(settings.getFileName(1), settings.getFileUri(1), commitSize);
+					addResult(results, "LoadInBatch (commit size:" + commitSize + " count:" + ret[1] + ")", ret[0]);
 				}
 
 				//load all data + sparql test
-				for (int i = 1; i <= settings.file_count; i++) {
-					p.testLoadDataBatch(settings.getFileName(1), settings.getFileUri(1), 50000);
+				p.clearDataBeforeRun(false);
+					for (int i = 1; i <= settings.file_count; i++) {
+					p.testLoadDataBatch(settings.getFileName(i), settings.getFileUri(i), 50000);
 				}
-				
+				p.clearDataBeforeRun(true);
+
 				for (int i = 1; i <= settings.sparql_count; i++) {
-					time = p.testSparql(settings.getSparqlQuery(i));
-					addResult(results, "SPARQL " + i, time);
+					ret = p.testSparql(settings.getSparqlQuery(i));
+					addResult(results, "SPARQL " + i + "(count:" + ret[1] + ")", ret[0]);
 				}
 			
 			}
@@ -102,7 +107,7 @@ public class TriplestoresBenchmark {
 		FileWriter writer = new FileWriter(settings.output);
 		StringBuilder header = new StringBuilder("test name");
 		for (int i = 1; i <= settings.runs; i++) {
-			header.append(",time " + i + " in ms");
+			header.append(",run " + i + " in ms");
 		}
 		header.append(System.lineSeparator());
 		writer.write(header.toString());

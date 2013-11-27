@@ -71,8 +71,8 @@ public class BatchInsertHandler implements RDFHandler {
 		if (count % commitSize == 0) {
 			try {
 				conn.add(statements, uri);
-				statements = new ArrayList<Statement>();
 				conn.commit();
+				statements = new ArrayList<Statement>();
 			} catch (RepositoryException e) {
 				throw new RDFHandlerException(e);
 			}

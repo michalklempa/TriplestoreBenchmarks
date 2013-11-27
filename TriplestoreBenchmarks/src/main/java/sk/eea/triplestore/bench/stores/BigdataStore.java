@@ -1,5 +1,6 @@
 package sk.eea.triplestore.bench.stores;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,4 +27,5 @@ public class BigdataStore extends AbstractSailStore {
 		return logger;
 	}
 
+	
 }
