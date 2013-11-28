@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sk.eea.triplestore.bench.Settings;
-import virtuoso.sesame2.driver.VirtuosoRepository;
 
 public class VirtuosoStore extends AbstractSailStore {
 
@@ -18,10 +17,11 @@ public class VirtuosoStore extends AbstractSailStore {
 
 
 	public void initialize(Settings settings) throws Exception {
-		repository = new VirtuosoRepository(settings.repository_url, 
-				settings.getProviderData("virtuoso.repository.user"), 
-				settings.getProviderData("virtuoso.repository.password"), true);
-		repository.initialize();
+		//vid notes
+//		repository = new VirtuosoRepository(settings.repository_url, 
+//				settings.getProviderData("virtuoso.repository.user"), 
+//				settings.getProviderData("virtuoso.repository.password"), true);
+//		repository.initialize();
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 
-public class BatchInsertHandler implements RDFHandler {
+public class InsertHandler implements RDFHandler {
 
 	private RepositoryConnection conn;
 	private RDFInserter inserter;
@@ -20,17 +20,19 @@ public class BatchInsertHandler implements RDFHandler {
 	private List<Statement> statements = new ArrayList<Statement>();
 	private URIImpl uri;
 
+
 	/**
 	 * 
 	 * @param conn
 	 * @param commitSize
 	 */
-	public BatchInsertHandler(RepositoryConnection conn, long commitSize, String uri) {
+	public InsertHandler(RepositoryConnection conn, long commitSize, String uri) {
 		this.count = 0;
 		this.inserter = new RDFInserter(conn);
 		this.conn = conn;
 		this.commitSize = commitSize;
-		this.uri = new URIImpl(uri);
+//		this.uri = new URIImpl(uri);	//pre bigdata nejde, treba null
+		this.uri = null;
 	}
 
 	/**
@@ -84,5 +86,9 @@ public class BatchInsertHandler implements RDFHandler {
 	 */
 	public void handleComment(String comment) throws RDFHandlerException {
 		inserter.handleComment(comment);
+	}
+	
+	public long getStatementsCount() {
+		return count;
 	}
 }

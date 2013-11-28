@@ -43,7 +43,9 @@ public abstract class AbstractSailStore implements Store {
 		long count = 0L;
 		
 
-		Resource context =null;
+//		Resource context = new URIImpl(uri);	//nejde pre bigdata, musi byt null
+		Resource context = null;
+		
 		RepositoryConnection conn = repository.getConnection();
 		conn.setAutoCommit(false);
 		clearData(conn, context);
@@ -52,7 +54,7 @@ public abstract class AbstractSailStore implements Store {
 			conn.add(inputFile, uri, RDFFormat.RDFXML, context);
 			conn.commit();
 			time = System.currentTimeMillis() - start;
-			count = 0L;//conn.size(context);
+			count = 0L;//conn.size(context);		//pre owlim spadne
 			getLogger().info("done, RDF count: " + count + ", time: " + time + " ms");
 		} finally {
 			conn.close();
@@ -76,12 +78,13 @@ public abstract class AbstractSailStore implements Store {
 		conn.setAutoCommit(false);
 		clearData(conn, context);
 		RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
-		parser.setRDFHandler(new BatchInsertHandler(conn, batchSize, uri));
+		InsertHandler handler = new InsertHandler(conn, batchSize, uri);
+		parser.setRDFHandler(handler);
 		try {
 			long start = System.currentTimeMillis();
 			parser.parse(new FileInputStream(inputFile), uri);
 			time =  System.currentTimeMillis() - start;
-			count = conn.size(context);
+			count = handler.getStatementsCount();
 			getLogger().info("done, RDF count: " + count + ", time: " + time + " ms");
 		} finally {
 			conn.commit();
