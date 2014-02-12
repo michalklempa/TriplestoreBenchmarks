@@ -2,9 +2,12 @@ package sk.eea.triplestore.bench.stores;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sk.eea.triplestore.bench.Settings;
 
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Query;
@@ -15,15 +18,13 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-import sk.eea.triplestore.bench.Settings;
-
 public class JenaStore implements Store {
 
 	private static final Logger logger = LoggerFactory.getLogger(JenaStore.class);
 	
 	private Model model;
 	
-	public void initialize(Settings settings) throws Exception {
+	public void initialize(Settings settings, String testId) throws Exception {
 	    model = ModelFactory.createDefaultModel();
 	}
 
@@ -69,4 +70,11 @@ public class JenaStore implements Store {
 	public void clearDataBeforeRun(boolean clear) {
 	}
 
+	@Override
+	public void clearDataAfterRun(boolean clear) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

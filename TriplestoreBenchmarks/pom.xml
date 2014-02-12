@@ -4,6 +4,21 @@
 	<groupId>sk.eea.triplestore.eval</groupId>
 	<artifactId>TriplestoreBenchmarks</artifactId>
 	<name>TriplestoreBenchmarks</name>
+	<packaging>jar</packaging>
+	<version>1.0.0</version>
+
+	<properties>
+		<jdk.version>1.7</jdk.version>
+		<sesame.version>2.6.10</sesame.version>
+		<jena.version>2.11.0</jena.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<bigdata.version>1.2.4</bigdata.version>
+		<virtuoso.provider.version>2.0</virtuoso.provider.version>
+		<neo4j.version>1.9.5</neo4j.version>
+		<blueprints.version>2.4.0</blueprints.version>
+		<project.build.directory>target</project.build.directory>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
@@ -30,38 +45,109 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>virtuoso.sesame2</groupId> -->
-		<!-- <artifactId>driver</artifactId> -->
-		<!-- <version>${virtuoso.provider.version}</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>virtuoso</groupId> -->
-		<!-- <artifactId>jdbc4</artifactId> -->
-		<!-- <version>${virtuoso.provider.version}</version> -->
-		<!-- <scope>runtime</scope> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>virtuoso.sesame2</groupId>
+			<artifactId>driver</artifactId>
+			<version>${virtuoso.provider.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>virtuoso</groupId>
+			<artifactId>jdbc4</artifactId>
+			<version>${virtuoso.provider.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.1.3</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.bigdata</groupId>
 			<artifactId>bigdata</artifactId>
 			<version>${bigdata.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>it.unimi.dsi</groupId>
 			<artifactId>fastutil</artifactId>
 			<version>6.5.11</version>
 		</dependency>
-            
+
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
 			<version>${jena.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-exec</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.2</version>
+		</dependency>
+		<!-- neo4j -->
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j</artifactId>
+			<version>${neo4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-neo4j-graph</artifactId>
+			<version>${blueprints.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.neo4j</groupId>
+					<artifactId>neo4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.neo4j</groupId>
+					<artifactId>neo4j-ha</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.neo4j</groupId>
+					<artifactId>neo4j-management</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-sail-graph</artifactId>
+			<version>${blueprints.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-graph-sail</artifactId>
+			<version>${blueprints.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.3.1</version>
+			<scope>test</scope>
 		</dependency>
 
 
@@ -75,13 +161,68 @@
 	</repositories>
 
 
-	<properties>
-		<sesame.version>2.6.10</sesame.version>
-		<jena.version>2.11.0</jena.version>
-		<slf4j.version>1.6.1</slf4j.version>
-		<bigdata.version>1.2.4</bigdata.version>
-		<virtuoso.provider.version>2.0</virtuoso.provider.version>
-	</properties>
 
-	<version>1.0.0</version>
+
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+
+				<version>2.0.2</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<!-- the two lines below tell Maven not to include test scoped dependencies -->
+							<includeScope>runtime</includeScope>
+							<excludeScope>provided</excludeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>sk.eea.triplestore.bench.TriplestoresBenchmark</mainClass>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+
+			</plugin>
+
+		</plugins>
+	</build>
 </project>
