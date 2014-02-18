@@ -92,11 +92,11 @@ public abstract class AbstractSailStore implements Store {
 		long time = 0L;
 		long count = 0L;
 
-		// Resource context = new URIImpl(uri); //nejde pre bigdata, musi byt
-		// null
-		Resource context = null;
+		Resource context = new URIImpl(uri); //nejde pre bigdata, musi byt null
+//		Resource context = null;
 
 		RepositoryConnection conn = repository.getConnection();
+		// Pre bigdata nano spadne
 		conn.setAutoCommit(false);
 		clearDataBeforeRun(conn, context);
 		try {
@@ -105,7 +105,7 @@ public abstract class AbstractSailStore implements Store {
 			conn.commit();
 			time = System.currentTimeMillis() - start;
 			count = 0L;
-			// conn.size(context); // pre owlim spadne
+			conn.size(context); // pre owlim spadne
 			getLogger().info(
 					"done, RDF count: " + count + ", time: " + time + " ms");
 			clearDataAfterRun(conn, context);

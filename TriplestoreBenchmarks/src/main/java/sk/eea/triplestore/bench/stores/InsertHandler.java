@@ -31,8 +31,8 @@ public class InsertHandler implements RDFHandler {
 		this.inserter = new RDFInserter(conn);
 		this.conn = conn;
 		this.commitSize = commitSize;
-//		this.uri = new URIImpl(uri);	//pre bigdata nejde, treba null
-		this.uri = null;
+		this.uri = new URIImpl(uri);	//pre bigdata nejde, treba null
+//		this.uri = null;
 	}
 
 	/**
