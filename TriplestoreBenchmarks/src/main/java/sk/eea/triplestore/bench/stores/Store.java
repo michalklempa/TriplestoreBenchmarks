@@ -1,5 +1,7 @@
 package sk.eea.triplestore.bench.stores;
 
+import java.util.List;
+
 import sk.eea.triplestore.bench.Settings;
 
 
@@ -14,4 +16,6 @@ public interface Store {
 	public long[] testLoadData(String fileName, String uri) throws Exception;
 	public long[] testLoadDataBatch(String fileName, String uri, int batchSize) throws Exception;
 	public long[] testSparql(String sparql) throws Exception;
+	public long[] testInsert(List<String> uris) throws Exception;
+	
 }

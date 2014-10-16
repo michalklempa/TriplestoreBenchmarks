@@ -9,30 +9,264 @@
 
 	<properties>
 		<jdk.version>1.7</jdk.version>
-		<sesame.version>2.6.10</sesame.version>
+		<sesame.version>2.7.13</sesame.version>
 		<jena.version>2.11.0</jena.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<virtuoso.provider.version>2.0</virtuoso.provider.version>
 		<neo4j.version>1.9.5</neo4j.version>
 		<blueprints.version>2.4.0</blueprints.version>
+		<kiwi-triplestore.version>3.2.1</kiwi-triplestore.version>
 		<project.build.directory>target</project.build.directory>
 	</properties>
 
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.marmotta</groupId>
+			<artifactId>kiwi-triplestore</artifactId>
+			<version>${kiwi-triplestore.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency> <!-- openRDF dependency -->
 			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-rdfxml</artifactId>
+			<artifactId>sesame-config</artifactId>
 			<version>${sesame.version}</version>
+			<type>jar</type>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-console</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-http-client</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-http-protocol</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-model</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-query</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryalgebra-evaluation</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryalgebra-model</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryparser-api</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryparser-serql</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryparser-sparql</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryresultio-api</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryresultio-binary</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryresultio-sparqljson</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryresultio-sparqlxml</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-queryresultio-text</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-api</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-dataset</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-event</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-repository-http</artifactId>
 			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-manager</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-sail</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-sparql</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-api</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-binary</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-n3</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-ntriples</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-trig</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-trix</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-turtle</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-runtime</artifactId>
 			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sail-api</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sail-memory</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sail-nativerdf</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sail-rdbms</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-util</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -43,16 +277,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>virtuoso.sesame2</groupId>
-			<artifactId>driver</artifactId>
-			<version>${virtuoso.provider.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>virtuoso</groupId>
-			<artifactId>jdbc4</artifactId>
-			<version>${virtuoso.provider.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -66,12 +290,12 @@
 			<version>6.5.11</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>apache-jena-libs</artifactId>
-			<type>pom</type>
-			<version>${jena.version}</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.jena</groupId> -->
+		<!-- <artifactId>apache-jena-libs</artifactId> -->
+		<!-- <type>pom</type> -->
+		<!-- <version>${jena.version}</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -83,53 +307,7 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
 		</dependency>
-		<!-- neo4j -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j</artifactId>
-			<version>${neo4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.tinkerpop.blueprints</groupId>
-			<artifactId>blueprints-neo4j-graph</artifactId>
-			<version>${blueprints.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.neo4j</groupId>
-					<artifactId>neo4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.neo4j</groupId>
-					<artifactId>neo4j-ha</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.neo4j</groupId>
-					<artifactId>neo4j-management</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.tinkerpop.blueprints</groupId>
-			<artifactId>blueprints-sail-graph</artifactId>
-			<version>${blueprints.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.tinkerpop.blueprints</groupId>
-			<artifactId>blueprints-graph-sail</artifactId>
-			<version>${blueprints.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -256,7 +434,7 @@
 					</plugin>
 				</plugins>
 			</build>
-						
+
 			<dependencies>
 				<dependency>
 					<groupId>com.bigdata</groupId>
@@ -275,7 +453,7 @@
 				<bigdata.version>1.2.4</bigdata.version>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>bigdata130</id>
 			<activation>
@@ -314,19 +492,185 @@
 					<groupId>com.bigdata</groupId>
 					<artifactId>bigdata</artifactId>
 					<version>${bigdata.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.apache.lucene</groupId>
-							<artifactId>lucene-core</artifactId>
-						</exclusion>
-					</exclusions>
 				</dependency>
 			</dependencies>
 
 			<properties>
-				<bigdata.version>1.3.0</bigdata.version>
+				<bigdata.version>1.3.1</bigdata.version>
 			</properties>
 		</profile>
+		<profile>
+			<id>virtuoso6</id>
+			<activation>
+				<property>
+					<name>profile</name>
+					<value>virtuoso6</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<id>add-sources</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${basedir}/src/virtuoso/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 
+			<dependencies>
+				<dependency>
+					<groupId>com.openlinksw</groupId>
+					<artifactId>virt_sesame2</artifactId>
+					<version>6_2.7</version>
+				</dependency>
+				<dependency>
+					<groupId>com.openlinksw</groupId>
+					<artifactId>virtjdbc</artifactId>
+					<version>6_4.1</version>
+				</dependency>
+
+			</dependencies>
+
+		</profile>
+		<profile>
+			<id>virtuoso7</id>
+			<activation>
+				<property>
+					<name>profile</name>
+					<value>virtuoso7</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<id>add-sources</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${basedir}/src/virtuoso/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>com.openlinksw</groupId>
+					<artifactId>virt_sesame2</artifactId>
+					<version>2.7</version>
+				</dependency>
+				<dependency>
+					<groupId>com.openlinksw</groupId>
+					<artifactId>virtjdbc</artifactId>
+					<version>4.1</version>
+				</dependency>
+
+			</dependencies>
+
+		</profile>
+		<profile>
+			<id>neo4j</id>
+			<activation>
+				<property>
+					<name>profile</name>
+					<value>neo4j</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<id>add-sources</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${basedir}/src/neo4j/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+
+			<dependencies>
+				<!-- neo4j -->
+				<dependency>
+					<groupId>org.neo4j</groupId>
+					<artifactId>neo4j</artifactId>
+					<version>${neo4j.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.tinkerpop.blueprints</groupId>
+					<artifactId>blueprints-neo4j-graph</artifactId>
+					<version>${blueprints.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>org.openrdf.sesame</groupId>
+							<artifactId>sesame-runtime</artifactId>
+
+						</exclusion>
+						<exclusion>
+							<groupId>org.neo4j</groupId>
+							<artifactId>neo4j-management</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>com.tinkerpop.blueprints</groupId>
+					<artifactId>blueprints-sail-graph</artifactId>
+					<version>${blueprints.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>org.slf4j</groupId>
+							<artifactId>slf4j-log4j12</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>com.tinkerpop.blueprints</groupId>
+					<artifactId>blueprints-graph-sail</artifactId>
+					<version>${blueprints.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>org.slf4j</groupId>
+							<artifactId>slf4j-log4j12</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
+
 </project>

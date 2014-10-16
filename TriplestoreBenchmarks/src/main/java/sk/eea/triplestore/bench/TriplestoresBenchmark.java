@@ -3,10 +3,15 @@ package sk.eea.triplestore.bench;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,41 +70,44 @@ public class TriplestoresBenchmark {
 
 		try {
 			Store p = getNextTest();
+			long[] ret;
 
-			// load test
-			p.clearDataBeforeRun(true);
-			p.clearDataAfterRun(false);
-			long[] ret = p.testLoadData(settings.getFileName(1),
-					settings.getFileUri(1));
-			addResult("LOAD_1", (double) ret[0]);
 			p.clearDataBeforeRun(false);
-			for (int i = 2; i <= file_count; i++) {
-				p.testLoadData(settings.getFileName(i), settings.getFileUri(i));
-			}
+			p.clearDataAfterRun(false);
+			{
+				int commitSize = 2000;
 
-			// batch load
-			int[] commitSizes = { 1000, 10000 };
-			for (int commitSize : commitSizes) {
-//				ret = p.testLoadDataBatch(settings.getFileName(1),
-//						settings.getFileUri(1), commitSize);
-				addResult("LOAD_1_" + commitSize, 0.0);
-			}
-//			p.clearDataBeforeRun(false);
-//			p.clearDataAfterRun(false);
-//			ret = p.testLoadDataBatch(settings.getFileName(1),
-//					settings.getFileUri(1), 100000);
-			addResult("LOAD_1_100000", 0.0);
-
-			// load all data + sparql test
-			for (int i = 2; i <= file_count; i++) {
-//				ret = p.testLoadDataBatch(settings.getFileName(i),
-//						settings.getFileUri(i), 50000);
-				addResult("LOAD_" + i + "_50000", 0.0);
+				for (int i = 1; i <= file_count; i++) {
+					ret = p.testLoadData(settings.getFileName(i),
+							settings.getFileUri(i));
+					addResult("LOAD_" + i + "_" + commitSize, (double) ret[0]);
+					writeResults(results);
+				}
 			}
 
 			for (int i = 1; i <= sparql_count; i++) {
 				ret = p.testSparql(settings.getSparqlQuery(i));
 				addResult("SPARQL_" + i, (double) ret[0]);
+				writeResults(results);
+			}
+
+			List<String> uris = new ArrayList<>();
+			for (int i = 1; i <= sparql_count; i++) {
+				uris.add(settings.getFileUri(i));
+			}
+			ret = p.testInsert(uris);
+			addResult("INSERT", (double) ret[0]);
+			writeResults(results);
+
+			p.clearDataBeforeRun(true);
+			p.clearDataAfterRun(true);
+			// batch load
+			int[] commitSizes = { 25000, 1000 };
+			for (int commitSize : commitSizes) {
+				ret = p.testLoadDataBatch(settings.getFileName(1),
+						settings.getFileUri(1), commitSize);
+				addResult("LOAD_1_" + commitSize, (double) ret[0]);
+				writeResults(results);
 			}
 
 			p.shutDown();
@@ -133,9 +141,12 @@ public class TriplestoresBenchmark {
 	 * @param args
 	 * @throws IOException
 	 * @throws FileNotFoundException
+	 * @throws RDFHandlerException
+	 * @throws RDFParseException
 	 */
 	public static void main(String[] args) throws FileNotFoundException,
-			IOException {
+			IOException, RDFParseException, RDFHandlerException {
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
 		TriplestoresBenchmark s = new TriplestoresBenchmark();
 		s.runTests();
 	}

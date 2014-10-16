@@ -1,7 +1,7 @@
 package sk.eea.triplestore.bench.stores;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -10,10 +10,12 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.Update;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.util.RDFLoader;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,24 +41,20 @@ public abstract class AbstractSailStore implements Store {
 	}
 
 	@Override
-	public void initialize(Settings settings, String testId)
-			throws Exception {
+	public void initialize(Settings settings, String testId) throws Exception {
 		this.testId = testId;
 		outputFile = settings.getValue("test." + testId + ".output.file");
 		repositoryType = settings.getValue("test." + testId
 				+ ".repository.type");
-		repositoryId = settings.getValue("test." + testId
-				+ ".repository.id");
-		repositoryUrl = settings.getValue("test." + testId
-				+ ".repository.url");
+		repositoryId = settings.getValue("test." + testId + ".repository.id");
+		repositoryUrl = settings.getValue("test." + testId + ".repository.url");
 
 		startupCommand = settings.getValue("test." + testId
 				+ ".startup.command");
 		shutdownCommand = settings.getValue("test." + testId
 				+ ".shutdown.command");
 
-		testDescription = settings.getValue("test." + testId
-				+ ".description");
+		testDescription = settings.getValue("test." + testId + ".description");
 		if (null != startupCommand && !startupCommand.isEmpty()) {
 			CommandLine cmdLine = CommandLine.parse(startupCommand);
 			DefaultExecutor executor = new DefaultExecutor();
@@ -68,7 +66,6 @@ public abstract class AbstractSailStore implements Store {
 			Resource... resource) throws Exception {
 		if (clearDataBeforeRun) {
 			connection.clear(resource);
-			connection.commit();
 		}
 	}
 
@@ -76,7 +73,6 @@ public abstract class AbstractSailStore implements Store {
 			Resource... resource) throws Exception {
 		if (clearDataAfterRun) {
 			connection.clear(resource);
-			connection.commit();
 		}
 	}
 
@@ -92,20 +88,20 @@ public abstract class AbstractSailStore implements Store {
 		long time = 0L;
 		long count = 0L;
 
-		Resource context = new URIImpl(uri); //nejde pre bigdata, musi byt null
-//		Resource context = null;
+		Resource context = new URIImpl(uri); // nejde pre bigdata, musi byt null
+
+		RepositoryConnection conn1 = repository.getConnection();
+		clearDataBeforeRun(conn1, context);
+		conn1.close();
 
 		RepositoryConnection conn = repository.getConnection();
-		// Pre bigdata nano spadne
-		conn.setAutoCommit(false);
-		clearDataBeforeRun(conn, context);
 		try {
 			long start = System.currentTimeMillis();
-			conn.add(inputFile, uri, RDFFormat.RDFXML, context);
-			conn.commit();
+			conn.add(inputFile, uri, Rio.getParserFormatForFileName(fileName),
+					context);
 			time = System.currentTimeMillis() - start;
-			count = 0L;
-			conn.size(context); // pre owlim spadne
+			count = -1L;
+			count = conn.size(context); // pre owlim spadne
 			getLogger().info(
 					"done, RDF count: " + count + ", time: " + time + " ms");
 			clearDataAfterRun(conn, context);
@@ -127,21 +123,25 @@ public abstract class AbstractSailStore implements Store {
 		getLogger().info(
 				"########## test loadRDFInBatch, file: " + inputFile.getName()
 						+ ", batchSize: " + batchSize + "  ##############");
-		RepositoryConnection conn = repository.getConnection();
 		long time = 0L;
 		long count = 0L;
 
-		conn.setAutoCommit(false);
-		clearDataBeforeRun(conn, context);
-		RDFParser parser = Rio.createParser(RDFFormat.RDFXML);
-		InsertHandler handler = new InsertHandler(conn, batchSize, uri);
-		parser.setRDFHandler(handler);
+		RepositoryConnection conn1 = repository.getConnection();
+		clearDataBeforeRun(conn1, context);
+		conn1.close();
+
+		RepositoryConnection conn = repository.getConnection();
+		CancellableCommitSizeInserter rdfInserter = new CancellableCommitSizeInserter(
+				conn, batchSize);
+		RDFFormat format = Rio.getParserFormatForFileName(inputFile
+				.getCanonicalPath());
+		RDFLoader loader = new RDFLoader(conn.getParserConfig(),
+				conn.getValueFactory());
 		try {
 			long start = System.currentTimeMillis();
-			parser.parse(new FileInputStream(inputFile), uri);
-			conn.commit();
+			loader.load(inputFile, uri, format, rdfInserter);
 			time = System.currentTimeMillis() - start;
-			count = handler.getStatementsCount();
+			count = rdfInserter.getRealStatementCounter();
 			getLogger().info(
 					"done, RDF count: " + count + ", time: " + time + " ms");
 			clearDataAfterRun(conn, context);
@@ -179,6 +179,38 @@ public abstract class AbstractSailStore implements Store {
 			} finally {
 				result.close();
 			}
+		} finally {
+			conn.close();
+		}
+		return new long[] { time, count };
+	}
+
+	public long[] testInsert(List<String> uris) throws Exception {
+		getLogger().info("########## test Insert Query ##############");
+		RepositoryConnection conn = repository.getConnection();
+
+		long time = 0L;
+		long count = 0;
+
+		try {
+			String sparql = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
+			Update update = conn.prepareUpdate(QueryLanguage.SPARQL, sparql);
+			DatasetImpl dataset = new DatasetImpl();
+			for (String uri : uris) {
+				dataset.addDefaultGraph(new URIImpl(uri));
+				dataset.addNamedGraph(new URIImpl(uri));
+			}
+			dataset.setDefaultInsertGraph(new URIImpl("http://newInsertGraph"));
+			dataset.addDefaultRemoveGraph(new URIImpl("http://newInsertGraph"));
+			update.setDataset(dataset);
+
+			long start = System.currentTimeMillis();
+			update.execute();
+			time = System.currentTimeMillis() - start;
+			count = conn.size(new URIImpl("http://newInsertGraph"));
+			getLogger().info(
+					"done, INSERT inserted: " + count + ", time: " + time
+							+ " ms");
 		} finally {
 			conn.close();
 		}
