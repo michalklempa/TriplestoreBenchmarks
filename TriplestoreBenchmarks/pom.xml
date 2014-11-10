@@ -579,14 +579,14 @@
 			</build>
 			<dependencies>
 				<dependency>
-					<groupId>com.openlinksw</groupId>
-					<artifactId>virt_sesame2</artifactId>
-					<version>2.7</version>
+					<groupId>eu.comsode</groupId>
+					<artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
+					<version>7_1.12</version>
 				</dependency>
 				<dependency>
-					<groupId>com.openlinksw</groupId>
-					<artifactId>virtjdbc</artifactId>
-					<version>4.1</version>
+					<groupId>eu.comsode</groupId>
+					<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
+					<version>7_3.72</version>
 				</dependency>
 
 			</dependencies>

@@ -1,6 +1,7 @@
 package sk.eea.triplestore.bench.stores;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
@@ -193,6 +194,11 @@ public abstract class AbstractSailStore implements Store {
 		long count = 0;
 
 		try {
+			 List<URIImpl> urisList = new ArrayList<URIImpl>();
+			for(String uri:uris) {
+				urisList.add(new URIImpl(uri));
+			}
+			getLogger().info("Starting inserting: " + conn.size(urisList.toArray(new URIImpl[0])));
 			String sparql = "INSERT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 			Update update = conn.prepareUpdate(QueryLanguage.SPARQL, sparql);
 			DatasetImpl dataset = new DatasetImpl();
